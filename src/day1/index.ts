@@ -10,21 +10,14 @@ class Day1 extends Day {
     }
 
     solveForPartOne(input: string): string {
-        const elves = input?.split(/\r?\n\r?\n/) ?? [];
         const max = getElfArray(input)
             .reduce((prev, current) => prev > current ? prev : current, 0);
         return max.toString();
     }
 
     solveForPartTwo(input: string): string {
-        const elves = input?.split(/\r?\n\r?\n/) ?? [];
         const sums = getElfArray(input).sort((a, b) => b - a);
-        debugger
         return (sums[0]+sums[1]+sums[2]).toString();
-    }
-
-    getElfArray(input: string) {
-        return 
     }
 }
 
