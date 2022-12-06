@@ -1,4 +1,3 @@
-import { count } from "console";
 import { Day } from "../day";
 
 const findMarker = (input: string, size: number) => {
