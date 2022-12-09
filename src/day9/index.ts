@@ -16,9 +16,14 @@ const getGrid = (head: Coord, tails: Coord[]) => {
     
     grid[grid.length - 1][0 - extremes.c1] = 's';
 
-    tails.forEach((t, i) => {
-        grid[grid.length - t[1] - 1][t[0] - extremes.c1] = i + 1;
-    })
+    for (let i = tails.length -1; i >=0; i--) {
+        const t = tails[i];
+        try {
+        grid[grid.length - t[1] - 1][t[0] - extremes.c1] = i + 1;}
+        catch (e) {
+            throw e;
+        }
+    }
 
     grid[grid.length - head[1] - 1][head[0] - extremes.c1] = 'H';
 
@@ -98,87 +103,47 @@ class Day9 extends Day {
 
         moves.forEach(m => {
             const [dir, num] = m.split(' ');
-            if (dir === 'R') {
-                for(let i=0; i< Number(num); i++) {
-                    head[0]++;
-                    let lead = head;
-                    let follow = tails[0];
-                    for (let j = 1; j < 10; j++) {
-                        if (lead[0] - 1 > follow[0]) {
-                            follow[0]++;
-                            if (lead[1] !== follow[1]) follow[1]  = lead[1];
-                        }
-                        lead = follow;
-                        follow = tails[j];
-                    }
-                    tailLocations.add(getKey(tails[8]));
+
+            
+            for(let i=0; i< Number(num); i++) {
+                let lastMove = [0,0];
+                switch (dir) {
+                    case 'U': lastMove = [0, 1]; break;
+                    case 'D': lastMove = [0, -1]; break;
+                    case 'L': lastMove = [-1, 0]; break;
+                    case 'R': lastMove = [1, 0]; break;
                 }
+                head[0] += lastMove[0];
+                head[1] += lastMove[1];
+                let lead = head;
+                let follow = tails[0];
+                for (let j = 1; j < 10; j++) {
+                    const currMove = [0, 0];
+                    if (lastMove[0]) {
+                        if (Math.abs(lead[0] - follow[0]) > 1) {
+                            currMove[0] = lastMove[0];
+                            if (follow[1] < lead[1]) currMove[1]++
+                            if (follow[1] > lead[1]) currMove[1]--
+                        }
+                    }
+                    if (lastMove[1] && !currMove[1]) {
+                        if (Math.abs(lead[1] - follow[1]) > 1) {
+                            currMove[1] = lastMove[1];
+                            if (follow[0] < lead[0]) currMove[0]++;
+                            if (follow[0] > lead[0]) currMove[0]--;
+                        }
+                    }
+                    follow[0] += currMove[0];
+                    follow[1] += currMove[1];
+                    lead = follow;
+                    follow = tails[j];
+                    lastMove = currMove;
+                }
+                tailLocations.add(getKey(tails[8]));
             }
 
-            if (dir === 'L') {
-                for(let i=0; i< Number(num); i++) {
-                    head[0]--;
-                    let lead = head;
-                    let follow = tails[0];
-                    for (let j = 1; j < 10; j++) {
-                        if (lead[0] + 1 < follow[0]) {
-                            follow[0]--;
-                            if (lead[1] !== follow[1]) follow[1]  = lead[1];
-                        }
-                        lead = follow;
-                        follow = tails[j];
-                    }
-                    tailLocations.add(getKey(tails[8]));
-                }
-            }
-            if (dir === 'U') {
-                for(let i=0; i< Number(num); i++) {
-                    head[1]++;
-                    let lastMove = [0, 1];
-                    let lead = head;
-                    let follow = tails[0];
-                    for (let j = 1; j < 10; j++) {
-                        const currMove = [0, 0];
-                        if (lastMove[0]) {
-                            if (lead[0] - follow[0] > 1) {
-                                currMove[0] = lastMove[0];
-                                if (follow[1] < lead[1]) currMove[1]++
-                                if (follow[1] > lead[1]) currMove[1]--
-                            }
-                        }
-                        if (lastMove[1] && !currMove[1]) {
-                            if (lead[1] - follow[1] > 1) {
-                                currMove[1] = lastMove[1];
-                                if (follow[0] < lead[0]) currMove[0]++;
-                                if (follow[0] > lead[0]) currMove[0]--;
-                            }
-                        }
-                        follow[0] += currMove[0];
-                        follow[1] += currMove[1];
-                        lead = follow;
-                        follow = tails[j];
-                        lastMove = currMove;
-                    }
-                    tailLocations.add(getKey(tails[8]));
-                }
-            }
-            if (dir === 'D') {
-                for(let i=0; i< Number(num); i++) {
-                    head[1]--;
-                    let lead = head;
-                    let follow = tails[0];
-                    for (let j = 1; j < 10; j++) {
-                        if (lead[1] + 1 < follow[1]) {
-                            follow[1]--;
-                            if (lead[0] !== follow[0]) follow[0]  = lead[0];
-                        }
-                        lead = follow;
-                        follow = tails[j];
-                    }
-                    tailLocations.add(getKey(tails[8]));
-                }
-            }
-            print(head, tails);
+            
+           //  print(head, tails);
            // console.log(tails)
         });
         
